@@ -158,7 +158,8 @@ def main():
                 st.header("Pengatur Diet Mingguan")
                 height = st.number_input("Masukkan tinggi badan Anda (cm):", min_value=100, max_value=250, step=1)
                 weight = st.number_input("Masukkan berat badan Anda (kg):", min_value=30, max_value=200, step=1)
-
+                
+            if st.button("Hitung"):
                 if height and weight:
                     imt = calculate_imt(weight, height)
                     category = get_imt_category(imt)
