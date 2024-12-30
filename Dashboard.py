@@ -151,8 +151,6 @@ def main():
                 st.success(f"Konsultasi berhasil diajukan! {name}, kami akan menghubungi Anda di {email} untuk jadwal pada {preferred_date} pukul {preferred_time}.")
 
         def main():
-            st.title("IdealFit - Fitur Premium")
-
             menu = ["Pengatur Diet Mingguan", "Monitoring Berat Badan", "Konsultasi Ahli Gizi", "Pengingat Harian"]
             choice = st.sidebar.selectbox("Pilih Fitur Premium", menu)
 
