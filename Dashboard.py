@@ -78,9 +78,6 @@ def main():
 
                 display_imt_chart(imt)
 
-if __name__ == "__main__":
-    main()
-
 #BAGIAN FITUR PREMIUM
     elif choice == "Fitur Premium":
         def calculate_imt(weight, height):
@@ -181,3 +178,5 @@ if __name__ == "__main__":
                 set_reminders()
 
         main()
+if __name__ == "__main__":
+    main()
