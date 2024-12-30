@@ -34,18 +34,14 @@ def tampilkan_grafik_imt(tinggi_cm, berat_kg):
     # Data untuk grafik
     kategori_labels = ["Kurus", "Normal", "Overweight", "Obesitas"]
     batas_imt = [18.5, 24.9, 29.9, 40]
-    nilai_imt = [imt if imt <= batas else batas for batas in batas_imt]
+    nilai_imt = [18.5, 24.9, 29.9, imt] if imt > 29.9 else [imt if imt <= batas else batas for batas in batas_imt]
 
-    # Warna kategori
     warna = ["blue", "green", "orange", "red"]
 
-    fig, ax = plt.subplots()
-    ax.bar(kategori_labels, nilai_imt, color=warna)
-    ax.axhline(imt, color='purple', linestyle='--', label=f'IMT Anda: {imt:.2f}')
-    ax.set_title("Visualisasi Indeks Massa Tubuh (IMT)")
-    ax.set_ylabel("Nilai IMT")
-    ax.legend()
-    st.pyplot(fig)
+    st.write("### Visualisasi IMT")
+    for label, nilai, warna in zip(kategori_labels, nilai_imt, warna):
+        st.write(f"{label}: **{nilai:.2f}**", unsafe_allow_html=True)
+        st.progress(int((nilai / max(batas_imt)) * 100))
 
 # Streamlit app
 st.title("Kalkulator Indeks Massa Tubuh (IMT)")
@@ -66,5 +62,4 @@ if st.sidebar.button("Hitung"):
     st.subheader("Berat Badan Ideal")
     st.write(f"Berat badan ideal Anda (Devine): {ideal:.2f} kg")
 
-    st.subheader("Grafik IMT")
     tampilkan_grafik_imt(tinggi, berat)
