@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import streamlit as st
 
 def hitung_imt(tinggi_cm, berat_kg):
