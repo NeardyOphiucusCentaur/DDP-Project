@@ -1,54 +1,48 @@
 import streamlit as st
 import datetime
 
-def calculate_imt(weight, height):
-    height_m = height / 100  # Convert height to meters
-    imt = weight / (height_m ** 2)
-    return imt
+def hitung_imt(tinggi_cm, berat_kg):
+    tinggi_m = tinggi_cm / 100  # Konversi tinggi ke meter
+    imt = berat_kg / (tinggi_m ** 2)
 
-def calculate_ideal_weight(height):
-    return 50 + 0.9 * (height - 152.4)
-
-def get_imt_category(imt):
+    # Kategori IMT berdasarkan standar WHO
     if imt < 18.5:
-        return "Kurus"
+        kategori = "Kurus"
     elif 18.5 <= imt < 24.9:
-        return "Normal"
+        kategori = "Normal"
     elif 25 <= imt < 29.9:
-        return "Overweight"
+        kategori = "Overweight"
     else:
-        return "Obesitas"
+        kategori = "Obesitas"
 
-def get_health_tips(category):
-    tips = {
-        "Kurus": "Tingkatkan asupan kalori dan protein dengan makanan sehat seperti kacang-kacangan, alpukat, dan daging tanpa lemak.",
-        "Normal": "Pertahankan pola hidup sehat dengan diet seimbang dan olahraga rutin.",
-        "Overweight": "Kurangi makanan tinggi gula dan lemak, tingkatkan aktivitas fisik harian seperti berjalan kaki atau berenang.",
-        "Obesitas": "Konsultasikan ke dokter atau ahli gizi untuk rencana diet dan olahraga yang terarah."
-    }
-    return tips[category]
+    return imt, kategori
 
-def get_daily_calorie_recommendation(imt, weight):
-    if imt < 18.5:
-        return int(weight * 35)
-    elif 18.5 <= imt < 24.9:
-        return int(weight * 30)
-    elif 25 <= imt < 29.9:
-        return int(weight * 25)
+def berat_badan_ideal(tinggi_cm, usia, jenis_kelamin):
+    if jenis_kelamin == "Pria":
+        ideal = 50 + 0.9 * (tinggi_cm - 152.4)
+    elif jenis_kelamin == "Wanita":
+        ideal = 45.5 + 0.9 * (tinggi_cm - 152.4)
     else:
-        return int(weight * 20)
+        raise ValueError("Jenis kelamin harus 'Pria' atau 'Wanita'.")
+    # Penyesuaian berdasarkan usia
+    if usia > 50:
+        ideal *= 0.95  # Kurangi 5% untuk usia di atas 50 tahun
+    return ideal
 
-def display_imt_chart(imt):
-    categories = ["Kurus", "Normal", "Overweight", "Obesitas"]
-    ranges = [18.5, 24.9, 29.9, 40]
-    values = [imt if imt <= r else 0 for r in ranges]
+def tampilkan_grafik_imt(tinggi_cm, berat_kg):
+    imt, kategori = hitung_imt(tinggi_cm, berat_kg)
 
-    chart_data = ""
-    for category, value in zip(categories, values):
-        bar = "█" * int(value)
-        chart_data += f"{category}: {bar} ({value:.1f})\n"
+    # Data untuk grafik
+    kategori_labels = ["Kurus", "Normal", "Overweight", "Obesitas"]
+    batas_imt = [18.5, 24.9, 29.9, 40]
+    nilai_imt = [18.5, 24.9, 29.9, imt] if imt > 29.9 else [imt if imt <= batas else batas for batas in batas_imt]
 
-    st.text(chart_data)
+    warna = ["blue", "green", "orange", "red"]
+
+    st.write("### Visualisasi IMT")
+    for label, nilai, warna in zip(kategori_labels, nilai_imt, warna):
+        st.write(f"{label}: **{nilai:.2f}**", unsafe_allow_html=True)
+        st.progress(int((nilai / max(batas_imt)) * 100))
 
 def main():
     st.title("IdealFit - Penghitung IMT dan Berat Badan Ideal")
@@ -57,26 +51,22 @@ def main():
     choice = st.sidebar.selectbox("Pilih Fitur", menu)
 
     if choice == "Penghitung IMT":
-        st.header("Penghitung IMT dan Berat Badan Ideal")
-        height = st.number_input("Masukkan tinggi badan Anda (cm):", min_value=100, max_value=250, step=1)
-        weight = st.number_input("Masukkan berat badan Anda (kg):", min_value=30, max_value=200, step=1)
+        tinggi = st.number_input("Masukkan tinggi badan (cm):", min_value=50.0, max_value=250.0, step=0.1)
+        berat = st.number_input("Masukkan berat badan (kg):", min_value=10.0, max_value=300.0, step=0.1)
+        usia = st.number_input("Masukkan usia Anda:", min_value=1, max_value=120, step=1)
+        jenis_kelamin = st.selectbox("Masukkan jenis kelamin:", ["Pria", "Wanita"])
 
         if st.button("Hitung"):
+            imt, kategori = hitung_imt(tinggi, berat)
+            st.subheader(f"Hasil IMT Anda")
+            st.write(f"IMT: {imt:.2f}")
+            st.write(f"Kategori: {kategori}")
 
-            if height and weight:
-                imt = calculate_imt(weight, height)
-                category = get_imt_category(imt)
-                ideal_weight = calculate_ideal_weight(height)
-                tips = get_health_tips(category)
-                calorie_recommendation = get_daily_calorie_recommendation(imt, weight)
+            ideal = berat_badan_ideal(tinggi, usia, jenis_kelamin)
+            st.subheader("Berat Badan Ideal")
+            st.write(f"Berat badan ideal Anda (Devine): {ideal:.2f} kg")
 
-                st.write(f"**Nilai IMT Anda:** {imt:.2f}")
-                st.write(f"**Kategori IMT Anda:** {category}")
-                st.write(f"**Berat badan ideal Anda:** {ideal_weight:.2f} kg")
-                st.write(f"**Rekomendasi asupan kalori harian:** {calorie_recommendation} kalori")
-                st.write(f"**Tips kesehatan:** {tips}")
-
-                display_imt_chart(imt)
+            tampilkan_grafik_imt(tinggi, berat)
 
 #BAGIAN FITUR PREMIUM
     elif choice == "Fitur Premium":
