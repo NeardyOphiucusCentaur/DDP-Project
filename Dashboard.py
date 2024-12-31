@@ -153,10 +153,10 @@ def main():
                 if height and weight:
                     if st.button("Hitung"):
                         imt = calculate_imt(weight, height)
-                    category = get_imt_category(imt)
-                    diet_plan = get_diet_plan(category)
-                    st.write(f"**Kategori IMT Anda:** {category}")
-                    st.write(f"**Rencana Diet Mingguan Anda:**\n{diet_plan}")
+                        category = get_imt_category(imt)
+                        diet_plan = get_diet_plan(category)
+                        st.write(f"**Kategori IMT Anda:** {category}")
+                        st.write(f"**Rencana Diet Mingguan Anda:**\n{diet_plan}")
 
             elif choice == "Monitoring Berat Badan":
                 track_weight_progress()
