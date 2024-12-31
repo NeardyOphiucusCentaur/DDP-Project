@@ -76,8 +76,7 @@ def main():
             return imt
 
         def calculate_ideal_weight(height):
-            if st.button("Hitung"):
-                return 50 + 0.9 * (height - 152.4)
+            return 50 + 0.9 * (height - 152.4)
 
         def get_imt_category(imt):
             if imt < 18.5:
@@ -152,7 +151,8 @@ def main():
                 weight = st.number_input("Masukkan berat badan Anda (kg):", min_value=30, max_value=200, step=1)
                 
                 if height and weight:
-                    imt = calculate_imt(weight, height)
+                    if st.button("Hitung"):
+                        imt = calculate_imt(weight, height)
                     category = get_imt_category(imt)
                     diet_plan = get_diet_plan(category)
                     st.write(f"**Kategori IMT Anda:** {category}")
